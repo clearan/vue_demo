@@ -11,42 +11,63 @@
     <!--页面主体区域-->
     <el-container>
       <!--侧边栏-->
-      <el-aside width="200px">
-        <el-menu background-color="#333744" text-color="#fff" active-text-color="#ffd04b">
+      <el-aside :width="isCollapse ? '64px' : '200px'">
+        <div class="toggle-button" @click="toggleCollapse">|||</div>
+        <el-menu background-color="#333744" text-color="#fff" active-text-color="#409EFF"
+                 unique-opened :collapse="isCollapse" :collapse-transition="false" router>
           <!--一级菜单-->
-          <el-submenu index="1">
+          <el-submenu :index="item.id + ''" v-for="item in menulist" :key="item.id">
             <!--一级菜单模板区域-->
             <template slot="title">
               <!--图标-->
               <i class="el-icon-location"></i>
               <!--文本-->
-              <span>导航一</span>
+              <span>{{item.authName}}</span>
             </template>
             <!--二级菜单-->
-            <el-menu-item index="1-4-1">
+            <el-menu-item :index="'/'+subItem.path +''" v-for="subItem in item.children" :key="subItem.id">
               <template slot="title">
                 <!--图标-->
-                <i class="el-icon-location"></i>
+                <i class="el-icon-menu"></i>
                 <!--文本-->
-                <span>导航一</span>
+                <span>{{subItem.authName}}</span>
               </template>
             </el-menu-item>
           </el-submenu>
         </el-menu>
       </el-aside>
       <!--右侧内容主体-->
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      menulist: [],
+      isCollapse: false
+    }
+  },
+  created() {
+    this.getMenuList()
+  },
   name: 'Home',
   methods: {
     logout() {
       window.sessionStorage.clear()
       this.$router.push('/login')
+    },
+    async getMenuList() {
+      const { data: res } = await this.$http.get('menus')
+      if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
+      this.menulist = res.data
+    },
+    toggleCollapse() {
+      this.isCollapse = !this.isCollapse
     }
   }
 }
@@ -74,8 +95,20 @@ export default {
   }
   .el-aside {
     background-color: #333744;
+    .el-menu { // 对齐
+      border-right: none;
+    }
   }
   .el-main {
     background-color: #eaedf1;
+  }
+  .toggle-button {
+    background-color: #4a5064;
+    color: #fff;
+    font-size: 10px;
+    line-height: 24px;
+    text-align: center;
+    letter-spacing: 0.2em;
+    cursor: pointer;
   }
 </style>
