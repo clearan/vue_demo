@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Login from '../components/Login'
 import Home from '../components/Home'
 import Welcome from '../components/Welcome'
+import Users from '../components/user/Users'
 
 Vue.use(VueRouter)
 
@@ -14,7 +15,8 @@ const router = new VueRouter({
       component: Home,
       redirect: '/welcome',
       children: [
-        { path: '/welcome', component: Welcome } // 登录后重定向到欢迎页，weicome没有写到一级路由，故要router-view
+        { path: '/welcome', component: Welcome }, // 登录后重定向到欢迎页，weicome没有写到一级路由，故要router-view
+        { path: '/users', component: Users }
       ]
     }
   ]
